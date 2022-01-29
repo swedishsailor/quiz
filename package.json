@@ -1,0 +1,28 @@
+{
+  "devDependencies": {
+    "sass": "^1.49.0"
+  },
+  "dependencies": {
+    "npm-run-all": "^4.1.5",
+    "stylelint": "^14.3.0",
+    "stylelint-config-standard": "^24.0.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "build-ts-dev": "webpack --config webpack.config.dev.js",
+    "build-ts-watch": "webpack --watch --config webpack.config.dev.js",
+    "build-ts-prod": "webpack --config webpack.config.prod.js",
+    "build-scss-only": "sass src/scss:../Webresources/css",
+    "build-scss-dev": "npm-run-all lint-scss build-scss-only",
+    "build-scss-prod": "npm-run-all lint-scss \"build-scss-only -- --style=compressed\"",
+    "build-scss-watch": "npm-run-all \"build-scss-only -- --watch\"",
+    "build-dev": "npm-run-all --parallel build-ts-dev build-scss-dev",
+    "build-watch": "npm-run-all --parallel build-ts-watch build-scss-watch test-watch",
+    "build": "npm-run-all test --parallel build-ts-prod build-scss-prod",
+    "watch": "npm run build-watch",
+    "format-ts": "prettier ./src/code/**/* --write",
+    "lint-ts": "eslint ./src/code/**/* --fix",
+    "lint-scss": "stylelint src/scss/**/*.{scss,sass} --fix"
+  }
+}
