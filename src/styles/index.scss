@@ -3,5 +3,40 @@
   src: url('../fonts/Inter.ttf');
 }
 
+body{
+  text-align: center;
+}
+
+.mainHeader{
+  margin-top: 45px;
+}
+
+.buttons{
+  display: flex;
+  flex-direction: column;
+  margin:auto;
+  margin-top:55px;
+
+  a{
+    width:450px;
+    height:40px;
+    margin:auto;
+    margin-block:15px;
+    border-radius: 15px;
+    border:none;
+    font-size:25px;
+    background:chocolate;
+    text-decoration: none;
+    color: #000;
+
+
+    &:hover{
+      background: darkcyan;
+      transition: 1s;
+    }
+  }
+}
+
 @import 'variables';
 @import 'scaffolding';
+@import './inGameView.scss';

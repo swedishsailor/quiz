@@ -1,0 +1,26 @@
+#inGameViewTemplate{
+    margin:auto;
+    width:100%;
+}
+
+.question{
+    margin-top:65px;
+    font-size:21px;
+}
+
+.answers {
+    width:inherit;
+    margin:auto;
+    height:250px;
+    display: flex;
+    flex-direction: column;
+    margin-top:65px;
+
+    button{
+        margin:auto;
+        width:255px;
+        height:45px;
+        margin:20px;
+        font-size:19px;
+    }
+}
