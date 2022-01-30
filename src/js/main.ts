@@ -1,17 +1,22 @@
 interface Answers {
-    content: string;
+    question: string;
+    answers:string[];
     isCorrect: boolean;
     points?: number;
 }
 
+class QuestionsAndAnswers {
+    static create(data:Answers){
+        return {question: data.question, answers: data.answers, isCorrect: data.isCorrect, points: data.points};
+    }    
+    next():void{
 
-const testAnswer:Answers = {
-    content: 'south aftica',
-    isCorrect: true,
-    points: 10
+    }
 }
 
-console.log(testAnswer);
+const testQAndA = QuestionsAndAnswers.create({question :'north america', answers:['lul', 'essalysoly'], isCorrect:true, points:20});
+
+console.log(testQAndA);
 
 // Query Selectors
 const startButton:Element = document.querySelector('.startButton');

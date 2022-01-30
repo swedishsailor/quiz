@@ -2,6 +2,6 @@
     "compilerOptions": {
         "target": "esnext",
         "watch": true,
-        "lib":["dom", "es2019"]
+        "skipLibCheck": true
     }
 }

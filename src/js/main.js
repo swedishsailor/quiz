@@ -1,9 +1,15 @@
-var testAnswer = {
-    content: 'south aftica',
-    isCorrect: true,
-    points: 10
-};
-console.log(testAnswer);
+var QuestionsAndAnswers = /** @class */ (function () {
+    function QuestionsAndAnswers() {
+    }
+    QuestionsAndAnswers.create = function (data) {
+        return { question: data.question, answers: data.answers, isCorrect: data.isCorrect, points: data.points };
+    };
+    QuestionsAndAnswers.prototype.next = function () {
+    };
+    return QuestionsAndAnswers;
+}());
+var testQAndA = QuestionsAndAnswers.create({ question: 'north america', answers: ['lul', 'essalysoly'], isCorrect: true, points: 20 });
+console.log(testQAndA);
 // Query Selectors
 var startButton = document.querySelector('.startButton');
 var informationsButton = document.querySelector('.informationsButton');
