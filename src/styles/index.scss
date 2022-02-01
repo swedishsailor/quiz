@@ -19,20 +19,22 @@ body{
 
   a{
     width:450px;
-    height:40px;
+    height:60px;
     margin:auto;
     margin-block:15px;
     border-radius: 15px;
+    padding-top: 15px;
     border:none;
-    font-size:25px;
+    font-size:28px;
+    font-weight: 900;
     background:chocolate;
     text-decoration: none;
     color: #000;
 
-
     &:hover{
       background: darkcyan;
       transition: 1s;
+      color:rgb(172, 172, 172)
     }
   }
 }
