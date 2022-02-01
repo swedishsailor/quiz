@@ -20,15 +20,15 @@
 
   <template id="inGameViewTemplate">
     <h2>Question</h2>
-    <p class="question">question content blah blah blah blah</p>
+    <p class="question">{{Question}}</p>
     <div class="answers">
       <div class="leftPanel">
-        <button class="answer1">Answer1</button>
-        <button class="answer2">Answer2</button>
+        <button value="" class="answer1" id="answersButton">{{Answer1}}</button>
+        <button value="" class="answer2" id="answersButton">{{Answer2}}</button>
       </div>
       <div class="rightPanel">
-        <button class="answer3">Answer3</button>
-        <button class="answer4">Answer4</button>
+        <button value="" class="answer3" id="answersButton">{{Answer3}}</button>
+        <button value="" class="answer4" id="answersButton">{{Answer4}}</button>
       </div>
     </div>
   </template>

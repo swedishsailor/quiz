@@ -1,62 +1,101 @@
-import {getData} from './data.js';
+import { getData } from './data.js';
 
 interface quizData {
     readonly question: string;
-    readonly answers:[
-        [content:string, isCorrect:boolean],
-        [content:string, isCorrect:boolean],
-        [content:string, isCorrect:boolean],
-        [content:string, isCorrect:boolean]
-    ];
+    readonly answers: [];
     readonly points?: number;
+    render: () => void;
 }
 
-class QuestionsAndAnswers {
-    static create(data:quizData){
-        return {...data};
-    }    
-    next():void{
+class QuestionsAndAnswers implements quizData {
+    question: string;
+    answers: [];
+    points?: number;
 
+
+    constructor(question: string, answers: [], points: number) {
+        this.question = question;
+        this.answers = answers;
+        this.points = points;
+    }
+
+    render(): void {
+        let containerHTML: string = inGameViewTemplate.innerHTML;
+        // Replace {{Quiz}}
+        document.getElementById('inGameViewTemplate').innerHTML = containerHTML.replace(/{{[A-z]{0,16}}}/g, `${this.question}`);
+
+        const answers = inGameViewTemplateContent.querySelectorAll('#answersButton');
+        console.log(answers)
+        // Replace all {{Answers}}
+        for (let i = 0; i < answers.length; i++) {
+            answers[i].textContent = answers[i].textContent.replace(`{{Answer${i + 1}}}`, `${this.answers[i][0]}`);
+            //@ts-ignore value is HTML tag elem
+            answers[i].value = `${this.answers[i][1]}`;
+        }
+    }
+    onClick(e: Event): void {
+        console.log(e);
     }
 }
 
 let data;
-const dataReceive = () => getData.then(result => {data = result});
+const dataReceive = () => getData.then(result => { data = result });
 dataReceive();
 // After data fetching create every Object and run methods on it
 setTimeout(() => {
-    for(let i = 0; i<Object.keys(data).length; i++)
+    /*for(let i = 0; i<Object.keys(data).length; i++)
     {
         const newQAndA = QuestionsAndAnswers.create(data[i]); 
         console.log(newQAndA);
-    }
+    }*/
+
+    const randomSet: number = Math.floor(Math.random() * Object.keys(data).length);
+    console.log(data[randomSet])
+    const test = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+    test.render();
+
 }, 355);
 
 // Query Selectors
-const startButton:Element = document.querySelector('.startButton');
-const informationsButton:Element = document.querySelector('.informationsButton');
-const optionsButton:Element = document.querySelector('.optionsButton');
+const startButton: Element = document.querySelector('.startButton');
+const informationsButton: Element = document.querySelector('.informationsButton');
+const optionsButton: Element = document.querySelector('.optionsButton');
+
 
 //@ts-ignore
-const inGameViewTemplate:HTMLTemplateElement = document.getElementById('inGameViewTemplate');
+const inGameViewTemplate: HTMLTemplateElement = document.getElementById('inGameViewTemplate');
 const inGameViewTemplateContent = inGameViewTemplate.content;
 /**
  *  Events
  */
-// On click Start Button
-startButton.addEventListener('click', (e) => {
+startButton.addEventListener('click', e => {
     e.preventDefault();
-    //const copy = inGameViewTemplateContent.cloneNode(true);
     document.body.innerHTML = '';
     document.body.appendChild(inGameViewTemplateContent);
 })
 
-// On click Informations Button
 informationsButton.addEventListener('click', e => {
- e.preventDefault();
+    e.preventDefault();
 })
 
-// On click Options Button
 optionsButton.addEventListener('click', e => {
     e.preventDefault();
+})
+
+// On click Quiz answers
+document.addEventListener('click', e => {
+    if(e.target.classList.contains('answer1'))
+    {
+        console.log(e.target.value)
+    } else if(e.target.classList.contains('answer2'))
+    {
+        console.log(e.target.value)
+    } else if(e.target.classList.contains('answer3'))
+    {
+        console.log(e.target.value)
+    }else if (e.target.classList.contains('answer4'))
+    {
+        console.log(e.target.value)
+    }
+
 })
