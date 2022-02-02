@@ -9,7 +9,8 @@ var QuestionsAndAnswers = /** @class */ (function () {
         this.points = points;
     }
     QuestionsAndAnswers.prototype.render = function (HTMLElement, timeLeft) {
-        var newHTML = "    \n        <div id=\"inGameView\">\n        <p class=\"timeLeft\"> Time left: " + timeLeft + " sec</p>\n        <h2>Question</h2>\n        <p class=\"question\">" + this.question + "</p>\n        <div class=\"answers\">\n          <div class=\"leftPanel\">\n            <button value=\"" + this.answers[0][1] + "\" class=\"answer1\" id=\"answersButton\">" + this.answers[0][0] + "</button>\n            <button value=\"" + this.answers[1][1] + "\" class=\"answer2\" id=\"answersButton\">" + this.answers[1][0] + "</button>\n          </div>\n          <div class=\"rightPanel\">\n            <button value=\"" + this.answers[2][1] + "\" class=\"answer3\" id=\"answersButton\">" + this.answers[2][0] + "</button>\n            <button value=\"" + this.answers[3][1] + "\" class=\"answer4\" id=\"answersButton\">" + this.answers[3][0] + "</button>\n          </div>\n        </div>\n      </div>";
+        questionNumber++;
+        var newHTML = "    \n        <div id=\"inGameView\">\n        <p class=\"timeLeft\"> Time left: ".concat(timeLeft, " sec</p>\n        <h2>Question ").concat(questionNumber, "</h2>\n        <p class=\"question\">").concat(this.question, "</p>\n        <div class=\"answers\">\n          <div class=\"leftPanel\">\n            <button value=\"").concat(this.answers[0][1], "\" class=\"answer1\" id=\"answersButton\">").concat(this.answers[0][0], "</button>\n            <button value=\"").concat(this.answers[1][1], "\" class=\"answer2\" id=\"answersButton\">").concat(this.answers[1][0], "</button>\n          </div>\n          <div class=\"rightPanel\">\n            <button value=\"").concat(this.answers[2][1], "\" class=\"answer3\" id=\"answersButton\">").concat(this.answers[2][0], "</button>\n            <button value=\"").concat(this.answers[3][1], "\" class=\"answer4\" id=\"answersButton\">").concat(this.answers[3][0], "</button>\n          </div>\n        </div>\n      </div>");
         HTMLElement.innerHTML = newHTML;
     };
     QuestionsAndAnswers.prototype.onClick = function (e) {
@@ -21,6 +22,7 @@ var QuestionsAndAnswers = /** @class */ (function () {
  * Functions
  */
 // After data fetching create every Object and run methods on it
+//FIRST RENDER
 var randomQuestion = function (HTMLElement) {
     setTimeout(function () {
         /*for(let i = 0; i<Object.keys(data).length; i++)
@@ -32,7 +34,7 @@ var randomQuestion = function (HTMLElement) {
         console.log(data[randomSet]);
         var test = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
         test.render(HTMLElement, 30);
-    }, 355);
+    }, 155);
 };
 var countTime = function (timeLeft) {
     _this.time = setInterval(function () {
@@ -43,7 +45,7 @@ var countTime = function (timeLeft) {
             document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: 30 sec";
         }
         else {
-            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: " + timeLeft + " sec";
+            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: ".concat(timeLeft, " sec");
         }
         // Restart timer if time is up
         if (timeLeft <= 0) {
@@ -61,10 +63,25 @@ var countTime = function (timeLeft) {
         return false;
     }, timeLeft * 1000 / timeLeft);
 };
-// Constants and IMPORTANT vars
-var data;
+// Function which simulate going back in SPA App instead of treating every dynamic component like a first rendering view
+var fakeHistoryBack = function (window, location) {
+    history.replaceState(null, document.title, location.pathname + "#!/stealingyourhistory");
+    history.pushState(null, document.title, location.pathname);
+    window.addEventListener("popstate", function () {
+        if (location.hash === "#!/stealingyourhistory") {
+            history.replaceState(null, document.title, location.pathname);
+            setTimeout(function () {
+                location.replace(BASIC_URL);
+            }, 0);
+        }
+    }, false);
+};
+// Constants and IMPORTANT variables
 var QUESTION_TIME = 30;
+var BASIC_URL = location.href;
+var data;
 var chosenAnswer = false;
+var questionNumber = 0;
 // Query Selectors
 var startButton = document.querySelector('.startButton');
 var informationsButton = document.querySelector('.informationsButton');
@@ -76,6 +93,7 @@ var inGameViewTemplateContent = inGameViewTemplate.content;
  *  Events
  */
 startButton.addEventListener('click', function (e) {
+    //history.pushState(null,null, `${location.href}quiz`)
     e.preventDefault();
     document.body.innerHTML = '';
     document.body.appendChild(inGameViewTemplateContent);
@@ -89,6 +107,10 @@ optionsButton.addEventListener('click', function (e) {
 });
 // On click Quiz answers
 document.addEventListener('click', function (e) {
+    console.log(location.href);
+    //FIRST CHECH IF RENDERING IS ACCOMPLISHED
+    var quizRenderingRegex = /{{[A-z]{0,16}}}/g;
+    console.log('Rendered set ', quizRenderingRegex.test(document.getElementById('inGameView').innerHTML));
     if (!chosenAnswer) {
         if (e.target.id === "answersButton") {
             chosenAnswer = true;
@@ -127,7 +149,7 @@ document.addEventListener('click', function (e) {
             var randomSet = Math.floor(Math.random() * Object.keys(data).length);
             var newSet_1 = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
             var time = setTimeout(function () {
-                newSet_1.render(document.getElementById('inGameView'), 5);
+                newSet_1.render(document.getElementById('inGameView'), 30);
                 clearInterval(_this.time);
                 chosenAnswer = false;
                 countTime(QUESTION_TIME);
@@ -142,3 +164,4 @@ document.addEventListener('click', function (e) {
 var dataReceive = function () { return data_js_1.getData.then(function (result) { data = result; }); };
 dataReceive();
 randomQuestion(document.getElementById('inGameViewTemplate'));
+fakeHistoryBack(window, location);

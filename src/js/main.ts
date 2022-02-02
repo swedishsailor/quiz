@@ -88,11 +88,27 @@ const countTime = (timeLeft: number): any => {
     }, timeLeft * 1000 / timeLeft)
 }
 
-// Constants and IMPORTANT vars
+// Function which simulate going back in SPA App instead of treating every dynamic component like a first rendering view
+const fakeHistoryBack = (window:Window, location:Location):void => {
+    history.replaceState(null, document.title, location.pathname+"#!/stealingyourhistory");
+    history.pushState(null, document.title, location.pathname);
+
+    window.addEventListener("popstate", () => {
+      if(location.hash === "#!/stealingyourhistory") {
+            history.replaceState(null, document.title, location.pathname);
+            setTimeout(function(){
+              location.replace(BASIC_URL);
+            },0);
+      }
+    }, false);
+}
+
+// Constants and IMPORTANT variables
 const QUESTION_TIME: number = 30;
+const BASIC_URL:string = location.href;
 let data: any[];
-let chosenAnswer = false;
-let questionNumber = 0;
+let chosenAnswer:boolean = false;
+let questionNumber:number = 0;
 
 // Query Selectors
 const startButton: Element = document.querySelector('.startButton');
@@ -107,10 +123,11 @@ const inGameViewTemplateContent: any = inGameViewTemplate.content;
  *  Events
  */
 startButton.addEventListener('click', e => {
+    //history.pushState(null,null, `${location.href}quiz`)
     e.preventDefault();
     document.body.innerHTML = '';
     document.body.appendChild(inGameViewTemplateContent);
-    countTime(QUESTION_TIME);
+    countTime(QUESTION_TIME);  
 })
 
 informationsButton.addEventListener('click', e => {
@@ -123,6 +140,7 @@ optionsButton.addEventListener('click', e => {
 
 // On click Quiz answers
 document.addEventListener('click', (e: any) => {
+    console.log(location.href)
     //FIRST CHECH IF RENDERING IS ACCOMPLISHED
     const quizRenderingRegex:RegExp = /{{[A-z]{0,16}}}/g;
     console.log('Rendered set ',quizRenderingRegex.test(document.getElementById('inGameView').innerHTML))
@@ -164,7 +182,7 @@ document.addEventListener('click', (e: any) => {
             const randomSet: number = Math.floor(Math.random() * Object.keys(data).length);
             const newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
             const time = setTimeout(() => {
-                newSet.render(document.getElementById('inGameView'), 5)
+                newSet.render(document.getElementById('inGameView'), 30)
                 clearInterval(this.time);
                 chosenAnswer = false;
                 countTime(QUESTION_TIME);
@@ -181,3 +199,4 @@ document.addEventListener('click', (e: any) => {
 const dataReceive = (): any => getData.then(result => { data = result });
 dataReceive();
 randomQuestion(document.getElementById('inGameViewTemplate'));
+fakeHistoryBack(window,location);
