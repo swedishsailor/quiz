@@ -5,7 +5,7 @@
 
 .question{
     margin-top:65px;
-    font-size:21px;
+    font-size:32px;
 }
 
 .answers {
@@ -21,7 +21,7 @@
         width:275px;
         height:55px;
         margin:20px;
-        font-size:21px;
+        font-size:23px;
         border: none;
         border-radius: 10px;
         background: rgb(199, 147, 223);
@@ -37,9 +37,121 @@
 
 }
 
+#inGameView{
+
+    h2{
+        font-size:36px;
+    }
+}
+
 .timeLeft{
-    font-size:26px;
+    font-size:33px;
     color:cyan;
     position: absolute;
     right:250px;
 }
+
+.noTime{
+    color:rgb(224, 69, 69);
+}
+
+.timeIsUp{
+    
+    margin:auto;
+    margin-top:-30px;
+    text-align: center;
+    color:red;
+    font-size:46px;
+    font-family: 'Lobster', cursive;
+}
+
+.goodAnswer{
+    margin:auto;
+    margin-top:-30px;
+    text-align: center;
+    color:rgb(53, 245, 53);
+    font-size:46px;
+    font-family: 'Lobster', cursive;
+    animation: good 1s linear infinite;
+}
+
+
+  /*
+  ** Animation of bad answer
+  */
+  .timeIsUp{
+    animation: glitch 1.5s linear infinite;
+  }
+  
+  @keyframes glitch{
+    2%,64%{
+      transform: translate(2px,0) skew(0deg);
+    }
+    4%,60%{
+      transform: translate(-2px,0) skew(0deg);
+    }
+    62%{
+      transform: translate(0,0) skew(5deg); 
+    }
+  }
+  
+
+  
+  .timeIsUp:before{
+    animation: glitchTop 2s linear infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+    -webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+  }
+
+  
+  @keyframes glitchTop{
+    2%,64%{
+      transform: translate(15px,-15px);
+    }
+    4%,60%{
+      transform: translate(-15px,15px);
+    }
+    62%{
+      transform: translate(32px,-7px) skew(-32deg); 
+    }
+  }
+  
+  .timeIsUp:after{
+    animation: glitchBotom 4s linear infinite;
+    clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+    -webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+  }
+  
+  @keyframes glitchBotom{
+    2%,64%{
+      transform: translate(-12px,9px);
+    }
+    4%,60%{
+      transform: translate(-12px,9px);
+    }
+    62%{
+      transform: translate(-42px,5px) skew(51deg); 
+    }
+  }
+
+  /*
+  ** Good answer animtaion
+  */
+
+  @keyframes good{
+      20%{
+        margin-top:0;
+      }
+      40%{
+        margin-top: 7px;
+        transform: scale(1.05);
+      }
+      60%{
+        margin-top: 14px;
+        transform: scale(1);
+      }
+      80%{
+        margin-top: 21px;
+        transform: scale(1.05);
+      }
+  }

@@ -5,12 +5,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="x-ua-compatible" content="ie=edge" />
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Coming+Soon&family=Emilys+Candy&family=Lobster&family=Rakkas&display=swap" rel="stylesheet">
   <title>Quiz</title>
 </head>
 
 <body>
-  <h1 class="mainHeader"> Welcome!</h1>
+  <h1 class="mainHeader"> Welcome</h1>
   <h3> Let's test your knowledge with some quizes</h3>
   <div class="buttons">
     <a class="startButton" href="#/quiz" type="submit">Start</a>
@@ -21,19 +23,19 @@
   <template id="inGameViewTemplate">
     <div id="inGameView">
       <p class="timeLeft"> Time left: </p>
-    <h2>Question</h2>
-    <p class="question">{{Question}}</p>
-    <div class="answers">
-      <div class="leftPanel">
-        <button value="" class="answer1" id="answersButton">{{Answer1}}</button>
-        <button value="" class="answer2" id="answersButton">{{Answer2}}</button>
-      </div>
-      <div class="rightPanel">
-        <button value="" class="answer3" id="answersButton">{{Answer3}}</button>
-        <button value="" class="answer4" id="answersButton">{{Answer4}}</button>
+      <h2>Question</h2>
+      <p class="question">{{Question}}</p>
+      <div class="answers">
+        <div class="leftPanel">
+          <button value="" class="answer1" id="answersButton">{{Answer1}}</button>
+          <button value="" class="answer2" id="answersButton">{{Answer2}}</button>
+        </div>
+        <div class="rightPanel">
+          <button value="" class="answer3" id="answersButton">{{Answer3}}</button>
+          <button value="" class="answer4" id="answersButton">{{Answer4}}</button>
+        </div>
       </div>
     </div>
-  </div>
   </template>
 </body>
 <script defer src="./js/runtime.bundle.js"></script>

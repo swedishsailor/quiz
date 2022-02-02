@@ -1,4 +1,5 @@
 "use strict";
+var _this = this;
 exports.__esModule = true;
 var data_js_1 = require("./data.js");
 var QuestionsAndAnswers = /** @class */ (function () {
@@ -34,20 +35,36 @@ var randomQuestion = function (HTMLElement) {
     }, 355);
 };
 var countTime = function (timeLeft) {
-    var time = setInterval(function () {
-        console.log(timeLeft);
+    _this.time = setInterval(function () {
+        var declaredTime = timeLeft;
         timeLeft--;
-        document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: " + timeLeft + " sec";
+        // IMPORTANT: code below makes the timer NOT rendering random value after the clearInterval()
+        if (timeLeft === 30) {
+            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: 30 sec";
+        }
+        else {
+            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: " + timeLeft + " sec";
+        }
+        // Restart timer if time is up
         if (timeLeft <= 0) {
-            clearInterval(time);
-            return true;
+            clearInterval(_this.time);
+            countTime(QUESTION_TIME);
+        }
+        else if (timeLeft <= 5) {
+            // If time is <=5 color the text red
+            document.querySelector('#inGameView').querySelector('.timeLeft').classList.add('noTime');
+        }
+        else if (timeLeft > 5) {
+            // If time is > 5 make text color basic
+            document.querySelector('#inGameView').querySelector('.timeLeft').classList.remove('noTime');
         }
         return false;
-    }, timeLeft * 1000 / 30);
+    }, timeLeft * 1000 / timeLeft);
 };
 // Constants and IMPORTANT vars
 var data;
 var QUESTION_TIME = 30;
+var chosenAnswer = false;
 // Query Selectors
 var startButton = document.querySelector('.startButton');
 var informationsButton = document.querySelector('.informationsButton');
@@ -55,7 +72,6 @@ var optionsButton = document.querySelector('.optionsButton');
 //@ts-ignore
 var inGameViewTemplate = document.getElementById('inGameViewTemplate');
 var inGameViewTemplateContent = inGameViewTemplate.content;
-var inGameViewCopy = inGameViewTemplate;
 /**
  *  Events
  */
@@ -73,33 +89,56 @@ optionsButton.addEventListener('click', function (e) {
 });
 // On click Quiz answers
 document.addEventListener('click', function (e) {
-    if (e.target.id === "answersButton") {
-        console.log(e.target.value);
-        if (e.target.value === 'true') {
-            e.target.classList.add('correct');
-            countTime(5);
-        }
-        else if (e.target.value = 'false') {
-            e.target.classList.add('bad');
-            for (var i = 0; i < document.querySelectorAll('#answersButton').length; i++) {
-                //@ts-ignore
-                if (document.querySelectorAll('#answersButton')[i].value === 'true') {
-                    document.querySelectorAll('#answersButton')[i].classList.add('correct');
-                }
+    if (!chosenAnswer) {
+        if (e.target.id === "answersButton") {
+            chosenAnswer = true;
+            console.log(e.target.value);
+            if (e.target.value === 'true') {
+                var goodChoice_1 = document.createElement('p');
+                goodChoice_1.classList.add('goodAnswer');
+                goodChoice_1.innerHTML = "Good answer!";
+                document.body.insertAdjacentElement('afterend', goodChoice_1);
+                setTimeout(function () {
+                    goodChoice_1.remove();
+                }, 5000);
+                clearInterval(_this.time);
+                e.target.classList.add('correct');
+                clearInterval(_this.time);
+                countTime(5);
             }
-            countTime(5);
+            else if (e.target.value = 'false') {
+                e.target.classList.add('bad');
+                for (var i = 0; i < document.querySelectorAll('#answersButton').length; i++) {
+                    //@ts-ignore
+                    if (document.querySelectorAll('#answersButton')[i].value === 'true') {
+                        document.querySelectorAll('#answersButton')[i].classList.add('correct');
+                    }
+                }
+                var badChoice_1 = document.createElement('p');
+                badChoice_1.classList.add('timeIsUp');
+                badChoice_1.innerHTML = "Bad answer";
+                document.body.insertAdjacentElement('afterend', badChoice_1);
+                setTimeout(function () {
+                    badChoice_1.remove();
+                }, 5000);
+                clearInterval(_this.time);
+                countTime(5);
+            }
+            var randomSet = Math.floor(Math.random() * Object.keys(data).length);
+            var newSet_1 = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+            var time = setTimeout(function () {
+                newSet_1.render(document.getElementById('inGameView'), 5);
+                clearInterval(_this.time);
+                chosenAnswer = false;
+                countTime(QUESTION_TIME);
+            }, 5 * 1000);
         }
-        var randomSet = Math.floor(Math.random() * Object.keys(data).length);
-        var newSet_1 = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
-        var time = setTimeout(function () {
-            newSet_1.render(document.getElementById('inGameView'), 5);
-            countTime(QUESTION_TIME);
-        }, 5 * 1000);
     }
 });
 /**
  * INIT MAIN
  */
+// Dispatch data from database
 var dataReceive = function () { return data_js_1.getData.then(function (result) { data = result; }); };
 dataReceive();
 randomQuestion(document.getElementById('inGameViewTemplate'));

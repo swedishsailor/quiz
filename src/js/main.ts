@@ -33,7 +33,7 @@ class QuestionsAndAnswers implements quizData {
             <button value="${this.answers[3][1]}" class="answer4" id="answersButton">${this.answers[3][0]}</button>
           </div>
         </div>
-      </div>`
+      </div>`;
         HTMLElement.innerHTML = newHTML;
     }
     onClick(e: Event): void {
@@ -60,22 +60,36 @@ const randomQuestion = (HTMLElement: HTMLElement): void => {
     }, 355);
 }
 
-const countTime = (timeLeft: number):any => {
-    const time = setInterval(() => {
-        console.log(timeLeft)
+const countTime = (timeLeft: number): any => {
+    this.time = setInterval(() => {
+        const declaredTime = timeLeft;
         timeLeft--;
-        document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: ${timeLeft} sec`;
+        // IMPORTANT: code below makes the timer NOT rendering random value after the clearInterval()
+        if (timeLeft === 30) {
+            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: 30 sec`;
+        } else {
+            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: ${timeLeft} sec`;
+        }
+
+        // Restart timer if time is up
         if (timeLeft <= 0) {
-            clearInterval(time);
-            return true;
+            clearInterval(this.time);
+            countTime(QUESTION_TIME);
+        } else if (timeLeft <= 5) {
+            // If time is <=5 color the text red
+            document.querySelector('#inGameView').querySelector('.timeLeft').classList.add('noTime');
+        } else if (timeLeft > 5) {
+            // If time is > 5 make text color basic
+            document.querySelector('#inGameView').querySelector('.timeLeft').classList.remove('noTime');
         }
         return false;
-    }, timeLeft * 1000 / 30)
+    }, timeLeft * 1000 / timeLeft)
 }
 
 // Constants and IMPORTANT vars
 let data: any[];
 const QUESTION_TIME: number = 30;
+let chosenAnswer = false;
 
 // Query Selectors
 const startButton: Element = document.querySelector('.startButton');
@@ -85,8 +99,7 @@ const optionsButton: Element = document.querySelector('.optionsButton');
 
 //@ts-ignore
 const inGameViewTemplate: HTMLTemplateElement = document.getElementById('inGameViewTemplate');
-const inGameViewTemplateContent = inGameViewTemplate.content;
-const inGameViewCopy = inGameViewTemplate;
+const inGameViewTemplateContent: any = inGameViewTemplate.content;
 /**
  *  Events
  */
@@ -107,35 +120,58 @@ optionsButton.addEventListener('click', e => {
 
 // On click Quiz answers
 document.addEventListener('click', (e: any) => {
-    if (e.target.id === "answersButton") {
-        console.log(e.target.value)
-        if (e.target.value === 'true') {
-            e.target.classList.add('correct');
-            countTime(5);
-        } else if (e.target.value = 'false') {
-            e.target.classList.add('bad');
-            for (let i = 0; i < document.querySelectorAll('#answersButton').length; i++) {
-                //@ts-ignore
-                if (document.querySelectorAll('#answersButton')[i].value === 'true') {
-                    document.querySelectorAll('#answersButton')[i].classList.add('correct');
+    if (!chosenAnswer) {
+        if (e.target.id === "answersButton") {
+            chosenAnswer = true;
+            console.log(e.target.value)
+            if (e.target.value === 'true') {
+                const goodChoice = document.createElement('p');
+                goodChoice.classList.add('goodAnswer');
+                goodChoice.innerHTML = `Good answer!`;
+                document.body.insertAdjacentElement('afterend', goodChoice);
+                setTimeout(() => {
+                    goodChoice.remove();
+                }, 5000);
+                clearInterval(this.time);
+                e.target.classList.add('correct');
+                clearInterval(this.time);
+                countTime(5);
+            } else if (e.target.value = 'false') {
+                e.target.classList.add('bad');
+                for (let i = 0; i < document.querySelectorAll('#answersButton').length; i++) {
+                    //@ts-ignore
+                    if (document.querySelectorAll('#answersButton')[i].value === 'true') {
+                        document.querySelectorAll('#answersButton')[i].classList.add('correct');
+                    }
                 }
+                const badChoice = document.createElement('p');
+                badChoice.classList.add('timeIsUp');
+                badChoice.innerHTML = `Bad answer`;
+                document.body.insertAdjacentElement('afterend', badChoice);
+                setTimeout(() => {
+                    badChoice.remove();
+                }, 5000);
+                clearInterval(this.time);
+                countTime(5);
             }
-            countTime(5);
-        }
 
-        const randomSet: number = Math.floor(Math.random() * Object.keys(data).length);
-        const newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
-        const time = setTimeout(() => {
-            newSet.render(document.getElementById('inGameView'), 5)
-            countTime(QUESTION_TIME);
-        }, 5 * 1000);
+            const randomSet: number = Math.floor(Math.random() * Object.keys(data).length);
+            const newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+            const time = setTimeout(() => {
+                newSet.render(document.getElementById('inGameView'), 5)
+                clearInterval(this.time);
+                chosenAnswer = false;
+                countTime(QUESTION_TIME);
+            }, 5 * 1000);
+        }
     }
+
 })
 
 /**
  * INIT MAIN
  */
-const dataReceive = () => getData.then(result => { data = result });
+// Dispatch data from database
+const dataReceive = (): any => getData.then(result => { data = result });
 dataReceive();
-
 randomQuestion(document.getElementById('inGameViewTemplate'));
