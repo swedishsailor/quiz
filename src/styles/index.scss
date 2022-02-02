@@ -16,6 +16,11 @@ body{
 
 h3{
   font-size: 26px;
+  padding-inline:15px;
+  
+  @media (max-width:480px) {
+    font-size:22px;
+  }
 }
 
 .buttons{
@@ -38,6 +43,11 @@ h3{
     text-decoration: none;
     font-family: 'Rakkas', cursive;
     color: #000;
+
+    @media (max-width:480px) {
+      width:240px;
+      font-size: 32px;
+    }
 
     &:hover{
       background: darkcyan;

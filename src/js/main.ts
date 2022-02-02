@@ -18,10 +18,11 @@ class QuestionsAndAnswers implements quizData {
         this.points = points;
     }
     render(HTMLElement: HTMLElement, timeLeft: number): void {
+        questionNumber++;
         const newHTML: string = `    
         <div id="inGameView">
         <p class="timeLeft"> Time left: ${timeLeft} sec</p>
-        <h2>Question</h2>
+        <h2>Question ${questionNumber}</h2>
         <p class="question">${this.question}</p>
         <div class="answers">
           <div class="leftPanel">
@@ -46,6 +47,7 @@ class QuestionsAndAnswers implements quizData {
  * Functions
  */
 // After data fetching create every Object and run methods on it
+//FIRST RENDER
 const randomQuestion = (HTMLElement: HTMLElement): void => {
     setTimeout(() => {
         /*for(let i = 0; i<Object.keys(data).length; i++)
@@ -57,7 +59,7 @@ const randomQuestion = (HTMLElement: HTMLElement): void => {
         console.log(data[randomSet])
         const test = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
         test.render(HTMLElement, 30);
-    }, 355);
+    }, 155);
 }
 
 const countTime = (timeLeft: number): any => {
@@ -87,9 +89,10 @@ const countTime = (timeLeft: number): any => {
 }
 
 // Constants and IMPORTANT vars
-let data: any[];
 const QUESTION_TIME: number = 30;
+let data: any[];
 let chosenAnswer = false;
+let questionNumber = 0;
 
 // Query Selectors
 const startButton: Element = document.querySelector('.startButton');
@@ -120,6 +123,9 @@ optionsButton.addEventListener('click', e => {
 
 // On click Quiz answers
 document.addEventListener('click', (e: any) => {
+    //FIRST CHECH IF RENDERING IS ACCOMPLISHED
+    const quizRenderingRegex:RegExp = /{{[A-z]{0,16}}}/g;
+    console.log('Rendered set ',quizRenderingRegex.test(document.getElementById('inGameView').innerHTML))
     if (!chosenAnswer) {
         if (e.target.id === "answersButton") {
             chosenAnswer = true;
