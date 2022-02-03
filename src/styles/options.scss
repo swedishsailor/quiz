@@ -1,0 +1,34 @@
+.optionsHeader{
+    font-size:44px;
+}
+
+.optionsUl{
+    margin:auto;
+    list-style: none;
+    margin-top: 55px;
+
+    .optionsLi{
+        font-size:32px;
+        margin:auto;
+        margin-block:25px;
+    }
+
+    .soundSlider{
+        appearance: none;
+        outline: none;
+        transition: opacity .2s;
+        border-radius: 10px;
+        width:320px;
+        background: #674cee;
+    }
+
+    .soundSlider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 25px;
+        background: #ffc400;
+        cursor: pointer;
+        border-radius: 50px;
+      }
+}

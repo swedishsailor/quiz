@@ -49,43 +49,69 @@ class QuestionsAndAnswers implements quizData {
 // After data fetching create every Object and run methods on it
 //FIRST RENDER
 const randomQuestion = (HTMLElement: HTMLElement): void => {
-    setTimeout(() => {
-        /*for(let i = 0; i<Object.keys(data).length; i++)
-        {
-            const newQAndA = QuestionsAndAnswers.create(data[i]); 
-            console.log(newQAndA);
-        }*/
-        const randomSet: number = Math.floor(Math.random() * Object.keys(data).length);
-        console.log(data[randomSet])
-        const test = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
-        test.render(HTMLElement, 30);
-    }, 155);
+    data
+        ?
+        setTimeout(() => {
+            /*for(let i = 0; i<Object.keys(data).length; i++)
+            {
+                const newQAndA = QuestionsAndAnswers.create(data[i]); 
+                console.log(newQAndA);
+            }*/
+
+            const randomSet: number = Math.floor(Math.random() * Object.keys(data).length);
+            console.log(data[randomSet])
+            const test = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+            test.render(HTMLElement, 30)
+        }, 155)
+        :
+        // SetTimeout to avoid maximum call stack size exceed
+        setTimeout(() => {
+            randomQuestion(HTMLElement);
+        }, 200);
+
 }
 
 const countTime = (timeLeft: number): any => {
-    this.time = setInterval(() => {
-        const declaredTime = timeLeft;
-        timeLeft--;
-        // IMPORTANT: code below makes the timer NOT rendering random value after the clearInterval()
-        if (timeLeft === 30) {
-            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: 30 sec`;
-        } else {
-            document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: ${timeLeft} sec` : null;
-        }
+    // Short if below reduce the number of errors when rendering is not accomplished
+    (document.querySelector('#inGameView')
+        ?
+        this.time = setInterval(() => {
+            const declaredTime = timeLeft;
+            timeLeft--;
+            // IMPORTANT: code below makes the timer NOT rendering random value after the clearInterval()
+            if (timeLeft === 30) {
+                document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: 30 sec`;
+            } else {
+                document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: ${timeLeft} sec` : null;
+            }
 
-        // Restart timer if time is up
-        if (timeLeft <= 0) {
-            clearInterval(this.time);
-            countTime(QUESTION_TIME);
-        } else if (timeLeft <= 5) {
-            // If time is <=5 color the text red
-            document.querySelector('#inGameView').querySelector('.timeLeft').classList.add('noTime');
-        } else if (timeLeft > 5) {
-            // If time is > 5 make text color basic
-            document.querySelector('#inGameView').querySelector('.timeLeft').classList.remove('noTime');
-        }
-        return false;
-    }, timeLeft * 1000 / timeLeft)
+            // Restart timer if time is up
+            if (timeLeft <= 0) {
+                clearInterval(this.time);
+                countTime(QUESTION_TIME);
+            } else if (timeLeft <= 5) {
+                // If time is <=5 color the text red
+                document.querySelector('#inGameView').querySelector('.timeLeft').classList.add('noTime');
+            } else if (timeLeft > 5) {
+                // If time is > 5 make text color basic
+                document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').classList.remove('noTime') : null;
+            }
+            return false;
+        }, timeLeft * 1000 / timeLeft)
+        :
+        countTime(timeLeft));
+}
+
+const playSoundEffect = (soundName: string): void => {
+    const audio: HTMLAudioElement = document.createElement("audio");
+    switch (soundName) {
+        case 'success': audio.src = './success.mp3';
+            break;
+        case 'fail': audio.src = './fail.mp3';
+            break;
+    }
+    audio.volume = volume;
+    audio.play();
 }
 
 // Function which simulate going back in SPA App instead of treating every dynamic component like a first rendering view
@@ -103,7 +129,7 @@ const fakeHistoryBack = (window: Window, location: Location): void => {
     }, false);
 }
 
-const startButtonClick = (e:Event):void => {
+const startButtonClick = (e: Event): void => {
     //history.pushState(null,null, `${location.href}quiz`)
     e.preventDefault();
     document.body.innerHTML = '';
@@ -116,6 +142,7 @@ const BASIC_URL: string = location.href;
 let data: any[];
 let chosenAnswer: boolean = false;
 let questionNumber: number = 0;
+let volume: number = 0.5;
 
 // Query Selectors
 const startButton: Element = document.querySelector('.startButton');
@@ -137,7 +164,7 @@ startButton.addEventListener('click', e => {
     if (isNotRendered) {
         document.getElementById('inGameView').innerHTML = `<div class="loadingDiv"><p class="loading">Loading</p><i class="fas fa-cog"></i></div>`;
         setTimeout(() => {
-            
+
             startButtonClick(e);
         }, 800);
     }
@@ -150,6 +177,39 @@ informationsButton.addEventListener('click', e => {
 
 optionsButton.addEventListener('click', e => {
     e.preventDefault();
+    const ul: HTMLUListElement = document.createElement("ul");
+    const li: HTMLLIElement = document.createElement("li");
+    const header: HTMLHeadElement = document.createElement('h3');
+    const soundSlider:HTMLInputElement = document.createElement('input');
+
+    soundSlider.type = 'range';
+    soundSlider.min = '1';
+    soundSlider.max = '100';
+    soundSlider.value = '50';
+    soundSlider.classList.add('soundSlider');
+    header.innerHTML = 'Options';
+    li.innerHTML = `Sound: ${volume*100}%`;
+    ul.classList.add('optionsUl');
+    li.classList.add('optionsLi');
+    const backgroundColorOpt: any = li.cloneNode(false);
+    backgroundColorOpt.innerHTML = 'Background color';
+    const questionTime: any = li.cloneNode(false);
+    questionTime.innerHTML = 'Time for questions';
+    header.classList.add('optionsHeader');
+    document.body.innerHTML = '';
+    document.body.appendChild(header);
+    document.body.appendChild(ul);
+    ul.appendChild(li);
+    ul.appendChild(soundSlider);
+    ul.appendChild(backgroundColorOpt);
+    ul.appendChild(questionTime);
+
+    soundSlider.addEventListener('change', () => {
+        let newVolume:string = volume.toString();
+        newVolume = soundSlider.value;
+        volume = parseInt(newVolume)/100;
+        li.innerHTML = `Sound: ${Math.floor(volume*100)}%`;
+    })
 })
 
 // On click Quiz answers
@@ -159,6 +219,7 @@ document.addEventListener('click', (e: any) => {
             chosenAnswer = true;
             if (e.target.value === 'true') {
                 const goodChoice = document.createElement('p');
+                playSoundEffect('success');
                 goodChoice.classList.add('goodAnswer');
                 goodChoice.innerHTML = `Good answer!`;
                 document.body.insertAdjacentElement('afterend', goodChoice);
@@ -170,6 +231,7 @@ document.addEventListener('click', (e: any) => {
                 clearInterval(this.time);
                 countTime(5);
             } else if (e.target.value = 'false') {
+                playSoundEffect('fail');
                 e.target.classList.add('bad');
                 for (let i = 0; i < document.querySelectorAll('#answersButton').length; i++) {
                     //@ts-ignore

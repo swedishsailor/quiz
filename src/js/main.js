@@ -24,44 +24,69 @@ var QuestionsAndAnswers = /** @class */ (function () {
 // After data fetching create every Object and run methods on it
 //FIRST RENDER
 var randomQuestion = function (HTMLElement) {
-    setTimeout(function () {
-        /*for(let i = 0; i<Object.keys(data).length; i++)
-        {
-            const newQAndA = QuestionsAndAnswers.create(data[i]);
-            console.log(newQAndA);
-        }*/
-        var randomSet = Math.floor(Math.random() * Object.keys(data).length);
-        console.log(data[randomSet]);
-        var test = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
-        test.render(HTMLElement, 30);
-    }, 155);
+    data
+        ?
+            setTimeout(function () {
+                /*for(let i = 0; i<Object.keys(data).length; i++)
+                {
+                    const newQAndA = QuestionsAndAnswers.create(data[i]);
+                    console.log(newQAndA);
+                }*/
+                var randomSet = Math.floor(Math.random() * Object.keys(data).length);
+                console.log(data[randomSet]);
+                var test = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+                test.render(HTMLElement, 30);
+            }, 155)
+        :
+            // SetTimeout to avoid maximum call stack size exceed
+            setTimeout(function () {
+                randomQuestion(HTMLElement);
+            }, 200);
 };
 var countTime = function (timeLeft) {
-    _this.time = setInterval(function () {
-        var declaredTime = timeLeft;
-        timeLeft--;
-        // IMPORTANT: code below makes the timer NOT rendering random value after the clearInterval()
-        if (timeLeft === 30) {
-            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: 30 sec";
-        }
-        else {
-            document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: " + timeLeft + " sec" : null;
-        }
-        // Restart timer if time is up
-        if (timeLeft <= 0) {
-            clearInterval(_this.time);
-            countTime(QUESTION_TIME);
-        }
-        else if (timeLeft <= 5) {
-            // If time is <=5 color the text red
-            document.querySelector('#inGameView').querySelector('.timeLeft').classList.add('noTime');
-        }
-        else if (timeLeft > 5) {
-            // If time is > 5 make text color basic
-            document.querySelector('#inGameView').querySelector('.timeLeft').classList.remove('noTime');
-        }
-        return false;
-    }, timeLeft * 1000 / timeLeft);
+    // Short if below reduce the number of errors when rendering is not accomplished
+    (document.querySelector('#inGameView')
+        ?
+            _this.time = setInterval(function () {
+                var declaredTime = timeLeft;
+                timeLeft--;
+                // IMPORTANT: code below makes the timer NOT rendering random value after the clearInterval()
+                if (timeLeft === 30) {
+                    document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: 30 sec";
+                }
+                else {
+                    document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: " + timeLeft + " sec" : null;
+                }
+                // Restart timer if time is up
+                if (timeLeft <= 0) {
+                    clearInterval(_this.time);
+                    countTime(QUESTION_TIME);
+                }
+                else if (timeLeft <= 5) {
+                    // If time is <=5 color the text red
+                    document.querySelector('#inGameView').querySelector('.timeLeft').classList.add('noTime');
+                }
+                else if (timeLeft > 5) {
+                    // If time is > 5 make text color basic
+                    document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').classList.remove('noTime') : null;
+                }
+                return false;
+            }, timeLeft * 1000 / timeLeft)
+        :
+            countTime(timeLeft));
+};
+var playSoundEffect = function (soundName) {
+    var audio = document.createElement("audio");
+    switch (soundName) {
+        case 'success':
+            audio.src = './success.mp3';
+            break;
+        case 'fail':
+            audio.src = './fail.mp3';
+            break;
+    }
+    audio.volume = volume;
+    audio.play();
 };
 // Function which simulate going back in SPA App instead of treating every dynamic component like a first rendering view
 var fakeHistoryBack = function (window, location) {
@@ -88,6 +113,7 @@ var BASIC_URL = location.href;
 var data;
 var chosenAnswer = false;
 var questionNumber = 0;
+var volume = 0.5;
 // Query Selectors
 var startButton = document.querySelector('.startButton');
 var informationsButton = document.querySelector('.informationsButton');
@@ -116,6 +142,37 @@ informationsButton.addEventListener('click', function (e) {
 });
 optionsButton.addEventListener('click', function (e) {
     e.preventDefault();
+    var ul = document.createElement("ul");
+    var li = document.createElement("li");
+    var header = document.createElement('h3');
+    var soundSlider = document.createElement('input');
+    soundSlider.type = 'range';
+    soundSlider.min = '1';
+    soundSlider.max = '100';
+    soundSlider.value = '50';
+    soundSlider.classList.add('soundSlider');
+    header.innerHTML = 'Options';
+    li.innerHTML = "Sound: " + volume * 100 + "%";
+    ul.classList.add('optionsUl');
+    li.classList.add('optionsLi');
+    var backgroundColorOpt = li.cloneNode(false);
+    backgroundColorOpt.innerHTML = 'Background color';
+    var questionTime = li.cloneNode(false);
+    questionTime.innerHTML = 'Time for questions';
+    header.classList.add('optionsHeader');
+    document.body.innerHTML = '';
+    document.body.appendChild(header);
+    document.body.appendChild(ul);
+    ul.appendChild(li);
+    ul.appendChild(soundSlider);
+    ul.appendChild(backgroundColorOpt);
+    ul.appendChild(questionTime);
+    soundSlider.addEventListener('change', function () {
+        var newVolume = volume.toString();
+        newVolume = soundSlider.value;
+        volume = parseInt(newVolume) / 100;
+        li.innerHTML = "Sound: " + Math.floor(volume * 100) + "%";
+    });
 });
 // On click Quiz answers
 document.addEventListener('click', function (e) {
@@ -124,6 +181,7 @@ document.addEventListener('click', function (e) {
             chosenAnswer = true;
             if (e.target.value === 'true') {
                 var goodChoice_1 = document.createElement('p');
+                playSoundEffect('success');
                 goodChoice_1.classList.add('goodAnswer');
                 goodChoice_1.innerHTML = "Good answer!";
                 document.body.insertAdjacentElement('afterend', goodChoice_1);
@@ -136,6 +194,7 @@ document.addEventListener('click', function (e) {
                 countTime(5);
             }
             else if (e.target.value = 'false') {
+                playSoundEffect('fail');
                 e.target.classList.add('bad');
                 for (var i = 0; i < document.querySelectorAll('#answersButton').length; i++) {
                     //@ts-ignore
