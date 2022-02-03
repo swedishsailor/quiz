@@ -58,6 +58,41 @@ h3{
   }
 }
 
+.loadingDiv{
+  width:100vw;
+  width:100vh;
+  position: absolute;
+  font-size:54px;
+  top:25%;
+  left: 0; 
+  right: 0; 
+  margin-left: auto; 
+  margin-right: auto; 
+}
+
+.fa-cog{
+  animation: roll 1.4s infinite;
+}
+
+@keyframes roll {
+  20%{
+    transform: rotate(0deg);
+  }
+  40%{
+    transform: rotate(90deg);
+  }
+  60%{
+    transform: rotate(180deg);
+  }
+  80%{
+    transform: rotate(270deg);
+  }
+  100%{
+    transform: rotate(360deg);
+  }
+  
+}
+
 @import 'variables';
 @import 'scaffolding';
 @import './inGameView.scss';

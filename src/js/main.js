@@ -10,7 +10,7 @@ var QuestionsAndAnswers = /** @class */ (function () {
     }
     QuestionsAndAnswers.prototype.render = function (HTMLElement, timeLeft) {
         questionNumber++;
-        var newHTML = "    \n        <div id=\"inGameView\">\n        <p class=\"timeLeft\"> Time left: ".concat(timeLeft, " sec</p>\n        <h2>Question ").concat(questionNumber, "</h2>\n        <p class=\"question\">").concat(this.question, "</p>\n        <div class=\"answers\">\n          <div class=\"leftPanel\">\n            <button value=\"").concat(this.answers[0][1], "\" class=\"answer1\" id=\"answersButton\">").concat(this.answers[0][0], "</button>\n            <button value=\"").concat(this.answers[1][1], "\" class=\"answer2\" id=\"answersButton\">").concat(this.answers[1][0], "</button>\n          </div>\n          <div class=\"rightPanel\">\n            <button value=\"").concat(this.answers[2][1], "\" class=\"answer3\" id=\"answersButton\">").concat(this.answers[2][0], "</button>\n            <button value=\"").concat(this.answers[3][1], "\" class=\"answer4\" id=\"answersButton\">").concat(this.answers[3][0], "</button>\n          </div>\n        </div>\n      </div>");
+        var newHTML = "    \n        <div id=\"inGameView\">\n        <p class=\"timeLeft\"> Time left: " + timeLeft + " sec</p>\n        <h2>Question " + questionNumber + "</h2>\n        <p class=\"question\">" + this.question + "</p>\n        <div class=\"answers\">\n          <div class=\"leftPanel\">\n            <button value=\"" + this.answers[0][1] + "\" class=\"answer1\" id=\"answersButton\">" + this.answers[0][0] + "</button>\n            <button value=\"" + this.answers[1][1] + "\" class=\"answer2\" id=\"answersButton\">" + this.answers[1][0] + "</button>\n          </div>\n          <div class=\"rightPanel\">\n            <button value=\"" + this.answers[2][1] + "\" class=\"answer3\" id=\"answersButton\">" + this.answers[2][0] + "</button>\n            <button value=\"" + this.answers[3][1] + "\" class=\"answer4\" id=\"answersButton\">" + this.answers[3][0] + "</button>\n          </div>\n        </div>\n      </div>";
         HTMLElement.innerHTML = newHTML;
     };
     QuestionsAndAnswers.prototype.onClick = function (e) {
@@ -45,7 +45,7 @@ var countTime = function (timeLeft) {
             document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: 30 sec";
         }
         else {
-            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: ".concat(timeLeft, " sec");
+            document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: " + timeLeft + " sec" : null;
         }
         // Restart timer if time is up
         if (timeLeft <= 0) {
@@ -76,6 +76,12 @@ var fakeHistoryBack = function (window, location) {
         }
     }, false);
 };
+var startButtonClick = function (e) {
+    //history.pushState(null,null, `${location.href}quiz`)
+    e.preventDefault();
+    document.body.innerHTML = '';
+    document.body.appendChild(inGameViewTemplateContent);
+};
 // Constants and IMPORTANT variables
 var QUESTION_TIME = 30;
 var BASIC_URL = location.href;
@@ -93,10 +99,16 @@ var inGameViewTemplateContent = inGameViewTemplate.content;
  *  Events
  */
 startButton.addEventListener('click', function (e) {
-    //history.pushState(null,null, `${location.href}quiz`)
-    e.preventDefault();
-    document.body.innerHTML = '';
-    document.body.appendChild(inGameViewTemplateContent);
+    startButtonClick(e);
+    //FIRST CHECH IF RENDERING IS ACCOMPLISHED
+    var quizRenderingRegex = /{{[A-z]{0,16}}}/g;
+    var isNotRendered = quizRenderingRegex.test(document.getElementById('inGameView').innerHTML);
+    if (isNotRendered) {
+        document.getElementById('inGameView').innerHTML = "<div class=\"loadingDiv\"><p class=\"loading\">Loading</p><i class=\"fas fa-cog\"></i></div>";
+        setTimeout(function () {
+            startButtonClick(e);
+        }, 800);
+    }
     countTime(QUESTION_TIME);
 });
 informationsButton.addEventListener('click', function (e) {
@@ -107,14 +119,9 @@ optionsButton.addEventListener('click', function (e) {
 });
 // On click Quiz answers
 document.addEventListener('click', function (e) {
-    console.log(location.href);
-    //FIRST CHECH IF RENDERING IS ACCOMPLISHED
-    var quizRenderingRegex = /{{[A-z]{0,16}}}/g;
-    console.log('Rendered set ', quizRenderingRegex.test(document.getElementById('inGameView').innerHTML));
     if (!chosenAnswer) {
         if (e.target.id === "answersButton") {
             chosenAnswer = true;
-            console.log(e.target.value);
             if (e.target.value === 'true') {
                 var goodChoice_1 = document.createElement('p');
                 goodChoice_1.classList.add('goodAnswer');

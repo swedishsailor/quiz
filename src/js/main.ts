@@ -70,7 +70,7 @@ const countTime = (timeLeft: number): any => {
         if (timeLeft === 30) {
             document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: 30 sec`;
         } else {
-            document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: ${timeLeft} sec`;
+            document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: ${timeLeft} sec` : null;
         }
 
         // Restart timer if time is up
@@ -89,26 +89,33 @@ const countTime = (timeLeft: number): any => {
 }
 
 // Function which simulate going back in SPA App instead of treating every dynamic component like a first rendering view
-const fakeHistoryBack = (window:Window, location:Location):void => {
-    history.replaceState(null, document.title, location.pathname+"#!/stealingyourhistory");
+const fakeHistoryBack = (window: Window, location: Location): void => {
+    history.replaceState(null, document.title, location.pathname + "#!/stealingyourhistory");
     history.pushState(null, document.title, location.pathname);
 
     window.addEventListener("popstate", () => {
-      if(location.hash === "#!/stealingyourhistory") {
+        if (location.hash === "#!/stealingyourhistory") {
             history.replaceState(null, document.title, location.pathname);
-            setTimeout(function(){
-              location.replace(BASIC_URL);
-            },0);
-      }
+            setTimeout(function () {
+                location.replace(BASIC_URL);
+            }, 0);
+        }
     }, false);
+}
+
+const startButtonClick = (e:Event):void => {
+    //history.pushState(null,null, `${location.href}quiz`)
+    e.preventDefault();
+    document.body.innerHTML = '';
+    document.body.appendChild(inGameViewTemplateContent);
 }
 
 // Constants and IMPORTANT variables
 const QUESTION_TIME: number = 30;
-const BASIC_URL:string = location.href;
+const BASIC_URL: string = location.href;
 let data: any[];
-let chosenAnswer:boolean = false;
-let questionNumber:number = 0;
+let chosenAnswer: boolean = false;
+let questionNumber: number = 0;
 
 // Query Selectors
 const startButton: Element = document.querySelector('.startButton');
@@ -123,11 +130,18 @@ const inGameViewTemplateContent: any = inGameViewTemplate.content;
  *  Events
  */
 startButton.addEventListener('click', e => {
-    //history.pushState(null,null, `${location.href}quiz`)
-    e.preventDefault();
-    document.body.innerHTML = '';
-    document.body.appendChild(inGameViewTemplateContent);
-    countTime(QUESTION_TIME);  
+    startButtonClick(e);
+    //FIRST CHECH IF RENDERING IS ACCOMPLISHED
+    const quizRenderingRegex: RegExp = /{{[A-z]{0,16}}}/g;
+    const isNotRendered: boolean = quizRenderingRegex.test(document.getElementById('inGameView').innerHTML);
+    if (isNotRendered) {
+        document.getElementById('inGameView').innerHTML = `<div class="loadingDiv"><p class="loading">Loading</p><i class="fas fa-cog"></i></div>`;
+        setTimeout(() => {
+            
+            startButtonClick(e);
+        }, 800);
+    }
+    countTime(QUESTION_TIME);
 })
 
 informationsButton.addEventListener('click', e => {
@@ -140,14 +154,9 @@ optionsButton.addEventListener('click', e => {
 
 // On click Quiz answers
 document.addEventListener('click', (e: any) => {
-    console.log(location.href)
-    //FIRST CHECH IF RENDERING IS ACCOMPLISHED
-    const quizRenderingRegex:RegExp = /{{[A-z]{0,16}}}/g;
-    console.log('Rendered set ',quizRenderingRegex.test(document.getElementById('inGameView').innerHTML))
     if (!chosenAnswer) {
         if (e.target.id === "answersButton") {
             chosenAnswer = true;
-            console.log(e.target.value)
             if (e.target.value === 'true') {
                 const goodChoice = document.createElement('p');
                 goodChoice.classList.add('goodAnswer');
@@ -199,4 +208,4 @@ document.addEventListener('click', (e: any) => {
 const dataReceive = (): any => getData.then(result => { data = result });
 dataReceive();
 randomQuestion(document.getElementById('inGameViewTemplate'));
-fakeHistoryBack(window,location);
+fakeHistoryBack(window, location);
