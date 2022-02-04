@@ -60,7 +60,9 @@ var countTime = function (timeLeft) {
                 // Restart timer if time is up
                 if (timeLeft <= 0) {
                     clearInterval(_this.time);
-                    countTime(QUESTION_TIME);
+                    badAnswer('Time is up');
+                    playSoundEffect('fail');
+                    renderNewQuestion();
                 }
                 else if (timeLeft <= 5) {
                     // If time is <=5 color the text red
@@ -87,6 +89,25 @@ var playSoundEffect = function (soundName) {
     }
     audio.volume = volume;
     audio.play();
+};
+var renderNewQuestion = function () {
+    var randomSet = Math.floor(Math.random() * Object.keys(data).length);
+    var newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+    var time = setTimeout(function () {
+        newSet.render(document.getElementById('inGameView'), 30);
+        clearInterval(_this.time);
+        chosenAnswer = false;
+        countTime(QUESTION_TIME);
+    }, 5 * 1000);
+};
+var badAnswer = function (message) {
+    var badChoice = document.createElement('p');
+    badChoice.classList.add('timeIsUp');
+    badChoice.innerHTML = message;
+    document.body.insertAdjacentElement('afterend', badChoice);
+    setTimeout(function () {
+        badChoice.remove();
+    }, 5000);
 };
 // Function which simulate going back in SPA App instead of treating every dynamic component like a first rendering view
 var fakeHistoryBack = function (window, location) {
@@ -125,11 +146,12 @@ var inGameViewTemplateContent = inGameViewTemplate.content;
  *  Events
  */
 startButton.addEventListener('click', function (e) {
+    fakeHistoryBack(window, location);
     startButtonClick(e);
     //FIRST CHECH IF RENDERING IS ACCOMPLISHED
     var quizRenderingRegex = /{{[A-z]{0,16}}}/g;
     var isNotRendered = quizRenderingRegex.test(document.getElementById('inGameView').innerHTML);
-    if (isNotRendered) {
+    if (isNotRendered || !data) {
         document.getElementById('inGameView').innerHTML = "<div class=\"loadingDiv\"><p class=\"loading\">Loading</p><i class=\"fas fa-cog\"></i></div>";
         setTimeout(function () {
             startButtonClick(e);
@@ -138,23 +160,30 @@ startButton.addEventListener('click', function (e) {
     countTime(QUESTION_TIME);
 });
 informationsButton.addEventListener('click', function (e) {
+    fakeHistoryBack(window, location);
     e.preventDefault();
+    var informations = document.createElement('p');
+    informations.classList.add('informations');
+    informations.innerHTML = 'This Quiz app is ...';
+    document.body.innerHTML = '';
+    document.body.appendChild(informations);
 });
 optionsButton.addEventListener('click', function (e) {
+    fakeHistoryBack(window, location);
     e.preventDefault();
     var ul = document.createElement("ul");
     var li = document.createElement("li");
     var header = document.createElement('h3');
     var soundSlider = document.createElement('input');
+    header.innerHTML = 'Options';
+    ul.classList.add('optionsUl');
+    li.classList.add('optionsLi');
+    li.innerHTML = "Sound: " + volume * 100 + "%";
     soundSlider.type = 'range';
     soundSlider.min = '1';
     soundSlider.max = '100';
     soundSlider.value = '50';
     soundSlider.classList.add('soundSlider');
-    header.innerHTML = 'Options';
-    li.innerHTML = "Sound: " + volume * 100 + "%";
-    ul.classList.add('optionsUl');
-    li.classList.add('optionsLi');
     var backgroundColorOpt = li.cloneNode(false);
     backgroundColorOpt.innerHTML = 'Background color';
     var questionTime = li.cloneNode(false);
@@ -202,24 +231,11 @@ document.addEventListener('click', function (e) {
                         document.querySelectorAll('#answersButton')[i].classList.add('correct');
                     }
                 }
-                var badChoice_1 = document.createElement('p');
-                badChoice_1.classList.add('timeIsUp');
-                badChoice_1.innerHTML = "Bad answer";
-                document.body.insertAdjacentElement('afterend', badChoice_1);
-                setTimeout(function () {
-                    badChoice_1.remove();
-                }, 5000);
+                badAnswer('Bad answer');
                 clearInterval(_this.time);
                 countTime(5);
             }
-            var randomSet = Math.floor(Math.random() * Object.keys(data).length);
-            var newSet_1 = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
-            var time = setTimeout(function () {
-                newSet_1.render(document.getElementById('inGameView'), 30);
-                clearInterval(_this.time);
-                chosenAnswer = false;
-                countTime(QUESTION_TIME);
-            }, 5 * 1000);
+            renderNewQuestion();
         }
     }
 });
@@ -230,4 +246,3 @@ document.addEventListener('click', function (e) {
 var dataReceive = function () { return data_js_1.getData.then(function (result) { data = result; }); };
 dataReceive();
 randomQuestion(document.getElementById('inGameViewTemplate'));
-fakeHistoryBack(window, location);

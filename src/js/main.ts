@@ -3,14 +3,14 @@ import { getData } from './data.js';
 interface quizData {
     readonly question: string;
     readonly answers: any[];
-    readonly points?: number;
+    readonly points: number;
     render: (elem: HTMLElement, timeLeft: number) => void;
 }
 
 class QuestionsAndAnswers implements quizData {
     question: string;
     answers: any[];
-    points?: number;
+    points: number;
 
     constructor(question: string, answers: any[], points: number) {
         this.question = question;
@@ -88,7 +88,10 @@ const countTime = (timeLeft: number): any => {
             // Restart timer if time is up
             if (timeLeft <= 0) {
                 clearInterval(this.time);
-                countTime(QUESTION_TIME);
+                badAnswer('Time is up');
+                playSoundEffect('fail');
+                renderNewQuestion();
+                  
             } else if (timeLeft <= 5) {
                 // If time is <=5 color the text red
                 document.querySelector('#inGameView').querySelector('.timeLeft').classList.add('noTime');
@@ -112,6 +115,27 @@ const playSoundEffect = (soundName: string): void => {
     }
     audio.volume = volume;
     audio.play();
+}
+
+const renderNewQuestion = () => {
+    const randomSet: number = Math.floor(Math.random() * Object.keys(data).length);
+            const newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+            const time = setTimeout(() => {
+                newSet.render(document.getElementById('inGameView'), 30)
+                clearInterval(this.time);
+                chosenAnswer = false;
+                countTime(QUESTION_TIME);
+            }, 5 * 1000);
+}
+
+const badAnswer = (message:string) => {
+    const badChoice: HTMLParagraphElement = document.createElement('p');
+    badChoice.classList.add('timeIsUp');
+    badChoice.innerHTML = message;
+    document.body.insertAdjacentElement('afterend', badChoice);
+    setTimeout(() => {
+        badChoice.remove();
+    }, 5000);
 }
 
 // Function which simulate going back in SPA App instead of treating every dynamic component like a first rendering view
@@ -157,11 +181,12 @@ const inGameViewTemplateContent: any = inGameViewTemplate.content;
  *  Events
  */
 startButton.addEventListener('click', e => {
+    fakeHistoryBack(window, location);
     startButtonClick(e);
     //FIRST CHECH IF RENDERING IS ACCOMPLISHED
     const quizRenderingRegex: RegExp = /{{[A-z]{0,16}}}/g;
     const isNotRendered: boolean = quizRenderingRegex.test(document.getElementById('inGameView').innerHTML);
-    if (isNotRendered) {
+    if (isNotRendered || !data) {
         document.getElementById('inGameView').innerHTML = `<div class="loadingDiv"><p class="loading">Loading</p><i class="fas fa-cog"></i></div>`;
         setTimeout(() => {
 
@@ -172,25 +197,32 @@ startButton.addEventListener('click', e => {
 })
 
 informationsButton.addEventListener('click', e => {
+    fakeHistoryBack(window, location);
     e.preventDefault();
+    const informations: HTMLParagraphElement = document.createElement('p');
+    informations.classList.add('informations');
+    informations.innerHTML = 'This Quiz app is ...';
+    document.body.innerHTML = '';
+    document.body.appendChild(informations);
 })
 
 optionsButton.addEventListener('click', e => {
+    fakeHistoryBack(window, location);
     e.preventDefault();
     const ul: HTMLUListElement = document.createElement("ul");
     const li: HTMLLIElement = document.createElement("li");
     const header: HTMLHeadElement = document.createElement('h3');
-    const soundSlider:HTMLInputElement = document.createElement('input');
+    const soundSlider: HTMLInputElement = document.createElement('input');
 
+    header.innerHTML = 'Options';
+    ul.classList.add('optionsUl');
+    li.classList.add('optionsLi');
+    li.innerHTML = `Sound: ${volume * 100}%`;
     soundSlider.type = 'range';
     soundSlider.min = '1';
     soundSlider.max = '100';
     soundSlider.value = '50';
     soundSlider.classList.add('soundSlider');
-    header.innerHTML = 'Options';
-    li.innerHTML = `Sound: ${volume*100}%`;
-    ul.classList.add('optionsUl');
-    li.classList.add('optionsLi');
     const backgroundColorOpt: any = li.cloneNode(false);
     backgroundColorOpt.innerHTML = 'Background color';
     const questionTime: any = li.cloneNode(false);
@@ -205,10 +237,10 @@ optionsButton.addEventListener('click', e => {
     ul.appendChild(questionTime);
 
     soundSlider.addEventListener('change', () => {
-        let newVolume:string = volume.toString();
+        let newVolume: string = volume.toString();
         newVolume = soundSlider.value;
-        volume = parseInt(newVolume)/100;
-        li.innerHTML = `Sound: ${Math.floor(volume*100)}%`;
+        volume = parseInt(newVolume) / 100;
+        li.innerHTML = `Sound: ${Math.floor(volume * 100)}%`;
     })
 })
 
@@ -239,25 +271,12 @@ document.addEventListener('click', (e: any) => {
                         document.querySelectorAll('#answersButton')[i].classList.add('correct');
                     }
                 }
-                const badChoice = document.createElement('p');
-                badChoice.classList.add('timeIsUp');
-                badChoice.innerHTML = `Bad answer`;
-                document.body.insertAdjacentElement('afterend', badChoice);
-                setTimeout(() => {
-                    badChoice.remove();
-                }, 5000);
+                badAnswer('Bad answer');
                 clearInterval(this.time);
                 countTime(5);
             }
 
-            const randomSet: number = Math.floor(Math.random() * Object.keys(data).length);
-            const newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
-            const time = setTimeout(() => {
-                newSet.render(document.getElementById('inGameView'), 30)
-                clearInterval(this.time);
-                chosenAnswer = false;
-                countTime(QUESTION_TIME);
-            }, 5 * 1000);
+            renderNewQuestion();
         }
     }
 
@@ -270,4 +289,3 @@ document.addEventListener('click', (e: any) => {
 const dataReceive = (): any => getData.then(result => { data = result });
 dataReceive();
 randomQuestion(document.getElementById('inGameViewTemplate'));
-fakeHistoryBack(window, location);
