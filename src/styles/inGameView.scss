@@ -1,187 +1,208 @@
-#inGameViewTemplate{
-    margin:auto;
-    width:100%;
+#inGameViewTemplate {
+  margin: auto;
+  width: 100%;
 }
 
-.question{
-    margin-top:65px;
-    font-size:32px;
-    padding-inline:15px;
+.points {
+  font-size: 31px;
+  position: absolute;
+  left: 100px;
 
-    @media (max-width:$mediaMinWidth) {
-      margin-top:45px;
-      font-size: 28px;
-    }
+  @media (max-width: $mediaMinWidth) {
+    width: 210px;
+    font-size: 24px;
+    position: static;
+    text-align: center;
+    margin: auto;
+    margin-top: 10px;
+  }
+}
+
+.score{
+  font-size: 38px;
+  color:rgb(247, 211, 167);
+}
+
+.question {
+  margin-top: 65px;
+  font-size: 32px;
+  padding-inline: 15px;
+
+  @media (max-width: $mediaMinWidth) {
+    margin-top: 45px;
+    font-size: 28px;
+  }
 }
 
 .answers {
-    width:inherit;
-    margin:auto;
-    height:250px;
-    display: flex;
-    flex-direction: column;
-    margin-top:65px;
+  width: inherit;
+  margin: auto;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 65px;
 
-    @media (max-width:$mediaMinWidth) {
-      margin-top:35px;
-    }
-    button{
-      cursor: pointer;
-        margin:auto;
-        width:275px;
-        height:55px;
-        margin:20px;
-        font-size:23px;
-        border: none;
-        border-radius: 10px;
-        background: rgb(199, 147, 223);
-        box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  @media (max-width: $mediaMinWidth) {
+    margin-top: 35px;
+  }
+  button {
+    cursor: pointer;
+    margin: auto;
+    width: 275px;
+    height: 55px;
+    margin: 20px;
+    font-size: 23px;
+    border: none;
+    border-radius: 10px;
+    background: rgb(199, 147, 223);
+    box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset,
+      rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px,
+      rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
 
-        @media (max-width:$mediaMinWidth) {
-          width: 210px;
-          font-size: 22px;
-        }
-    }
-
-    .correct{
-        background:lightgreen;
-    }
-    .bad{
-        background:darkred;
-    }
-
-}
-
-#inGameView{
-
-    h2{
-        font-size:36px;
-    }
-}
-
-.timeLeft{
-    font-size:33px;
-    color:cyan;
-    position: absolute;
-    right:100px;
-
-    @media (max-width:$mediaMinWidth) {
+    @media (max-width: $mediaMinWidth) {
       width: 210px;
-      font-size: 24px;
-      position:static;
-      text-align: center;
-      margin:auto;
-      margin-top:10px;
+      font-size: 22px;
     }
-    @media (min-width:$mediaMinWidth) and (max-width:$mediaMediumWidth){
-      position:static;
-      text-align: center;
-      margin:auto;
-      margin-top:10px;
-    }
+  }
+
+  .correct {
+    background: lightgreen;
+  }
+  .bad {
+    background: darkred;
+  }
 }
 
-.noTime{
-    color:rgb(224, 69, 69);
+#inGameView {
+  h2 {
+    font-size: 36px;
+  }
 }
 
-.timeIsUp{
-    
-    margin:auto;
-    margin-top:-30px;
+.timeLeft {
+  font-size: 33px;
+  color: cyan;
+  position: absolute;
+  right: 100px;
+
+  @media (max-width: $mediaMinWidth) {
+    width: 210px;
+    font-size: 24px;
+    position: static;
     text-align: center;
-    color:red;
-    font-size:46px;
-    font-family: 'Lobster', cursive;
-}
-
-.goodAnswer{
-    margin:auto;
-    margin-top:-30px;
+    margin: auto;
+    margin-top: 10px;
+  }
+  @media (min-width: $mediaMinWidth) and (max-width: $mediaMediumWidth) {
+    position: static;
     text-align: center;
-    color:rgb(53, 245, 53);
-    font-size:46px;
-    font-family: 'Lobster', cursive;
-    animation: good 1s linear infinite;
+    margin: auto;
+    margin-top: 10px;
+  }
 }
 
+.noTime {
+  color: rgb(224, 69, 69);
+}
 
-  /*
+.timeIsUp {
+  margin: auto;
+  margin-top: -30px;
+  text-align: center;
+  color: red;
+  font-size: 46px;
+  font-family: "Lobster", cursive;
+}
+
+.goodAnswer {
+  margin: auto;
+  margin-top: -30px;
+  text-align: center;
+  color: rgb(53, 245, 53);
+  font-size: 46px;
+  font-family: "Lobster", cursive;
+  animation: good 1s linear infinite;
+}
+
+/*
   ** Animation of bad answer
   */
-  .timeIsUp{
-    animation: glitch 1.5s linear infinite;
-  }
-  
-  @keyframes glitch{
-    2%,64%{
-      transform: translate(2px,0) skew(0deg);
-    }
-    4%,60%{
-      transform: translate(-2px,0) skew(0deg);
-    }
-    62%{
-      transform: translate(0,0) skew(5deg); 
-    }
-  }
-  
+.timeIsUp {
+  animation: glitch 1.5s linear infinite;
+}
 
-  
-  .timeIsUp:before{
-    animation: glitchTop 2s linear infinite;
-    clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
-    -webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+@keyframes glitch {
+  2%,
+  64% {
+    transform: translate(2px, 0) skew(0deg);
   }
+  4%,
+  60% {
+    transform: translate(-2px, 0) skew(0deg);
+  }
+  62% {
+    transform: translate(0, 0) skew(5deg);
+  }
+}
 
-  
-  @keyframes glitchTop{
-    2%,64%{
-      transform: translate(15px,-15px);
-    }
-    4%,60%{
-      transform: translate(-15px,15px);
-    }
-    62%{
-      transform: translate(32px,-7px) skew(-32deg); 
-    }
-  }
-  
-  .timeIsUp:after{
-    animation: glitchBotom 4s linear infinite;
-    clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
-    -webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
-  }
-  
-  @keyframes glitchBotom{
-    2%,64%{
-      transform: translate(-12px,9px);
-    }
-    4%,60%{
-      transform: translate(-12px,9px);
-    }
-    62%{
-      transform: translate(-42px,5px) skew(51deg); 
-    }
-  }
+.timeIsUp:before {
+  animation: glitchTop 2s linear infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+  -webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+}
 
-  /*
+@keyframes glitchTop {
+  2%,
+  64% {
+    transform: translate(15px, -15px);
+  }
+  4%,
+  60% {
+    transform: translate(-15px, 15px);
+  }
+  62% {
+    transform: translate(32px, -7px) skew(-32deg);
+  }
+}
+
+.timeIsUp:after {
+  animation: glitchBotom 4s linear infinite;
+  clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+  -webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+}
+
+@keyframes glitchBotom {
+  2%,
+  64% {
+    transform: translate(-12px, 9px);
+  }
+  4%,
+  60% {
+    transform: translate(-12px, 9px);
+  }
+  62% {
+    transform: translate(-42px, 5px) skew(51deg);
+  }
+}
+
+/*
   ** Good answer animtaion
   */
 
-  @keyframes good{
-      20%{
-        margin-top:0;
-      }
-      40%{
-        margin-top: 7px;
-        transform: scale(1.05);
-      }
-      60%{
-        margin-top: 14px;
-        transform: scale(1);
-      }
-      80%{
-        margin-top: 21px;
-        transform: scale(1.05);
-      }
+@keyframes good {
+  20% {
+    margin-top: 0;
   }
+  40% {
+    margin-top: 7px;
+    transform: scale(1.05);
+  }
+  60% {
+    margin-top: 14px;
+    transform: scale(1);
+  }
+  80% {
+    margin-top: 21px;
+    transform: scale(1.05);
+  }
+}

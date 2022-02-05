@@ -22,6 +22,7 @@ class QuestionsAndAnswers implements quizData {
         const newHTML: string = `    
         <div id="inGameView">
         <p class="timeLeft"> Time left: ${timeLeft} sec</p>
+        <p class="points"> Score: <span class="score">${points * 10}</span></p>
         <h2>Question ${questionNumber}</h2>
         <p class="question">${this.question}</p>
         <div class="answers">
@@ -91,7 +92,7 @@ const countTime = (timeLeft: number): any => {
                 badAnswer('Time is up');
                 playSoundEffect('fail');
                 renderNewQuestion();
-                  
+
             } else if (timeLeft <= 5) {
                 // If time is <=5 color the text red
                 document.querySelector('#inGameView').querySelector('.timeLeft').classList.add('noTime');
@@ -119,16 +120,16 @@ const playSoundEffect = (soundName: string): void => {
 
 const renderNewQuestion = () => {
     const randomSet: number = Math.floor(Math.random() * Object.keys(data).length);
-            const newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
-            const time = setTimeout(() => {
-                newSet.render(document.getElementById('inGameView'), 30)
-                clearInterval(this.time);
-                chosenAnswer = false;
-                countTime(QUESTION_TIME);
-            }, 5 * 1000);
+    const newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+    const time = setTimeout(() => {
+        newSet.render(document.getElementById('inGameView'), 30)
+        clearInterval(this.time);
+        chosenAnswer = false;
+        countTime(QUESTION_TIME);
+    }, 5 * 1000);
 }
 
-const badAnswer = (message:string) => {
+const badAnswer = (message: string) => {
     const badChoice: HTMLParagraphElement = document.createElement('p');
     badChoice.classList.add('timeIsUp');
     badChoice.innerHTML = message;
@@ -167,6 +168,7 @@ let data: any[];
 let chosenAnswer: boolean = false;
 let questionNumber: number = 0;
 let volume: number = 0.5;
+let points: number = 0;
 
 // Query Selectors
 const startButton: Element = document.querySelector('.startButton');
@@ -250,6 +252,7 @@ document.addEventListener('click', (e: any) => {
         if (e.target.id === "answersButton") {
             chosenAnswer = true;
             if (e.target.value === 'true') {
+                points += 10;
                 const goodChoice = document.createElement('p');
                 playSoundEffect('success');
                 goodChoice.classList.add('goodAnswer');

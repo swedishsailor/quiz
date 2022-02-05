@@ -10,7 +10,7 @@ var QuestionsAndAnswers = /** @class */ (function () {
     }
     QuestionsAndAnswers.prototype.render = function (HTMLElement, timeLeft) {
         questionNumber++;
-        var newHTML = "    \n        <div id=\"inGameView\">\n        <p class=\"timeLeft\"> Time left: " + timeLeft + " sec</p>\n        <h2>Question " + questionNumber + "</h2>\n        <p class=\"question\">" + this.question + "</p>\n        <div class=\"answers\">\n          <div class=\"leftPanel\">\n            <button value=\"" + this.answers[0][1] + "\" class=\"answer1\" id=\"answersButton\">" + this.answers[0][0] + "</button>\n            <button value=\"" + this.answers[1][1] + "\" class=\"answer2\" id=\"answersButton\">" + this.answers[1][0] + "</button>\n          </div>\n          <div class=\"rightPanel\">\n            <button value=\"" + this.answers[2][1] + "\" class=\"answer3\" id=\"answersButton\">" + this.answers[2][0] + "</button>\n            <button value=\"" + this.answers[3][1] + "\" class=\"answer4\" id=\"answersButton\">" + this.answers[3][0] + "</button>\n          </div>\n        </div>\n      </div>";
+        var newHTML = "    \n        <div id=\"inGameView\">\n        <p class=\"timeLeft\"> Time left: " + timeLeft + " sec</p>\n        <p class=\"points\"> Score: <span class=\"score\">" + points * 10 + "</span></p>\n        <h2>Question " + questionNumber + "</h2>\n        <p class=\"question\">" + this.question + "</p>\n        <div class=\"answers\">\n          <div class=\"leftPanel\">\n            <button value=\"" + this.answers[0][1] + "\" class=\"answer1\" id=\"answersButton\">" + this.answers[0][0] + "</button>\n            <button value=\"" + this.answers[1][1] + "\" class=\"answer2\" id=\"answersButton\">" + this.answers[1][0] + "</button>\n          </div>\n          <div class=\"rightPanel\">\n            <button value=\"" + this.answers[2][1] + "\" class=\"answer3\" id=\"answersButton\">" + this.answers[2][0] + "</button>\n            <button value=\"" + this.answers[3][1] + "\" class=\"answer4\" id=\"answersButton\">" + this.answers[3][0] + "</button>\n          </div>\n        </div>\n      </div>";
         HTMLElement.innerHTML = newHTML;
     };
     QuestionsAndAnswers.prototype.onClick = function (e) {
@@ -135,6 +135,7 @@ var data;
 var chosenAnswer = false;
 var questionNumber = 0;
 var volume = 0.5;
+var points = 0;
 // Query Selectors
 var startButton = document.querySelector('.startButton');
 var informationsButton = document.querySelector('.informationsButton');
@@ -209,6 +210,7 @@ document.addEventListener('click', function (e) {
         if (e.target.id === "answersButton") {
             chosenAnswer = true;
             if (e.target.value === 'true') {
+                points += 10;
                 var goodChoice_1 = document.createElement('p');
                 playSoundEffect('success');
                 goodChoice_1.classList.add('goodAnswer');

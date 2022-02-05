@@ -20,6 +20,7 @@
         border-radius: 10px;
         width:320px;
         background: #674cee;
+        border:1px solid #000;
     }
 
     .soundSlider::-webkit-slider-thumb {
@@ -30,6 +31,7 @@
         background: #ffc400;
         cursor: pointer;
         border-radius: 50px;
+        border:2px solid #000;
       }
 }
 
