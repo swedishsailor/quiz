@@ -1,10 +1,8 @@
-"use strict";
-exports.__esModule = true;
-exports.getData = void 0;
-var axios_1 = require("axios");
-var url = "https://quiz-jsonserver.herokuapp.com";
-exports.getData = axios_1["default"].get(url + '/qa')
-    .then(function (response) {
+import axios from "axios";
+const url = "https://quiz-jsonserver.herokuapp.com";
+export const getData = axios.get(url + '/qa')
+    .then(response => {
     console.log('Fetched Data :', response.data);
     return response.data;
-})["catch"](function (error) { return console.log(error); });
+})
+    .catch(error => console.log(error));

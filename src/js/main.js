@@ -1,75 +1,74 @@
-"use strict";
-var _this = this;
-exports.__esModule = true;
-var data_js_1 = require("./data.js");
-var QuestionsAndAnswers = /** @class */ (function () {
-    function QuestionsAndAnswers(question, answers, points) {
+import { getData } from './data.js';
+class QuestionsAndAnswers {
+    question;
+    answers;
+    points;
+    constructor(question, answers, points) {
         this.question = question;
         this.answers = answers;
         this.points = points;
     }
-    QuestionsAndAnswers.prototype.render = function (HTMLElement, timeLeft) {
+    render(HTMLElement, timeLeft) {
         questionNumber++;
-        var newHTML = "    \n        <div id=\"inGameView\">\n        <p class=\"timeLeft\"> Time left: " + timeLeft + " sec</p>\n        <p class=\"points\"> Score: <span class=\"score\">" + points * 10 + "</span></p>\n        <h2>Question " + questionNumber + "</h2>\n        <p class=\"question\">" + this.question + "</p>\n        <div class=\"answers\">\n          <div class=\"leftPanel\">\n            <button value=\"" + this.answers[0][1] + "\" class=\"answer1\" id=\"answersButton\">" + this.answers[0][0] + "</button>\n            <button value=\"" + this.answers[1][1] + "\" class=\"answer2\" id=\"answersButton\">" + this.answers[1][0] + "</button>\n          </div>\n          <div class=\"rightPanel\">\n            <button value=\"" + this.answers[2][1] + "\" class=\"answer3\" id=\"answersButton\">" + this.answers[2][0] + "</button>\n            <button value=\"" + this.answers[3][1] + "\" class=\"answer4\" id=\"answersButton\">" + this.answers[3][0] + "</button>\n          </div>\n        </div>\n      </div>";
+        const newHTML = `    
+        <div id="inGameView">
+        <p class="timeLeft"> Time left: ${timeLeft} sec</p>
+        <p class="points"> Score: <span class="score">${points * 10}</span></p>
+        <h2>Question ${questionNumber}</h2>
+        <p class="question">${this.question}</p>
+        <div class="answers">
+          <div class="leftPanel">
+            <button value="${this.answers[0][1]}" class="answer1" id="answersButton">${this.answers[0][0]}</button>
+            <button value="${this.answers[1][1]}" class="answer2" id="answersButton">${this.answers[1][0]}</button>
+          </div>
+          <div class="rightPanel">
+            <button value="${this.answers[2][1]}" class="answer3" id="answersButton">${this.answers[2][0]}</button>
+            <button value="${this.answers[3][1]}" class="answer4" id="answersButton">${this.answers[3][0]}</button>
+          </div>
+        </div>
+      </div>`;
         HTMLElement.innerHTML = newHTML;
-    };
-    QuestionsAndAnswers.prototype.onClick = function (e) {
+    }
+    onClick(e) {
         console.log(e);
-    };
-    return QuestionsAndAnswers;
-}());
-/**
- * Functions
- */
-// After data fetching create every Object and run methods on it
-//FIRST RENDER
-var randomQuestion = function (HTMLElement) {
+    }
+}
+const randomQuestion = (HTMLElement) => {
     data
         ?
-            setTimeout(function () {
-                /*for(let i = 0; i<Object.keys(data).length; i++)
-                {
-                    const newQAndA = QuestionsAndAnswers.create(data[i]);
-                    console.log(newQAndA);
-                }*/
-                var randomSet = Math.floor(Math.random() * Object.keys(data).length);
+            setTimeout(() => {
+                const randomSet = Math.floor(Math.random() * Object.keys(data).length);
                 console.log(data[randomSet]);
-                var test = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+                const test = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
                 test.render(HTMLElement, 30);
             }, 155)
         :
-            // SetTimeout to avoid maximum call stack size exceed
-            setTimeout(function () {
+            setTimeout(() => {
                 randomQuestion(HTMLElement);
             }, 200);
 };
-var countTime = function (timeLeft) {
-    // Short if below reduce the number of errors when rendering is not accomplished
+const countTime = (timeLeft) => {
     (document.querySelector('#inGameView')
         ?
-            _this.time = setInterval(function () {
-                var declaredTime = timeLeft;
+            this.time = setInterval(() => {
+                const declaredTime = timeLeft;
                 timeLeft--;
-                // IMPORTANT: code below makes the timer NOT rendering random value after the clearInterval()
                 if (timeLeft === 30) {
-                    document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: 30 sec";
+                    document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: 30 sec`;
                 }
                 else {
-                    document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = "Time left: " + timeLeft + " sec" : null;
+                    document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').innerHTML = `Time left: ${timeLeft} sec` : null;
                 }
-                // Restart timer if time is up
                 if (timeLeft <= 0) {
-                    clearInterval(_this.time);
+                    clearInterval(this.time);
                     badAnswer('Time is up');
                     playSoundEffect('fail');
                     renderNewQuestion();
                 }
                 else if (timeLeft <= 5) {
-                    // If time is <=5 color the text red
                     document.querySelector('#inGameView').querySelector('.timeLeft').classList.add('noTime');
                 }
                 else if (timeLeft > 5) {
-                    // If time is > 5 make text color basic
                     document.querySelector('#inGameView') ? document.querySelector('#inGameView').querySelector('.timeLeft').classList.remove('noTime') : null;
                 }
                 return false;
@@ -77,8 +76,8 @@ var countTime = function (timeLeft) {
         :
             countTime(timeLeft));
 };
-var playSoundEffect = function (soundName) {
-    var audio = document.createElement("audio");
+const playSoundEffect = (soundName) => {
+    const audio = document.createElement("audio");
     switch (soundName) {
         case 'success':
             audio.src = './success.mp3';
@@ -90,30 +89,29 @@ var playSoundEffect = function (soundName) {
     audio.volume = volume;
     audio.play();
 };
-var renderNewQuestion = function () {
-    var randomSet = Math.floor(Math.random() * Object.keys(data).length);
-    var newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
-    var time = setTimeout(function () {
+const renderNewQuestion = () => {
+    const randomSet = Math.floor(Math.random() * Object.keys(data).length);
+    const newSet = new QuestionsAndAnswers(data[randomSet].question, data[randomSet].answers, data[randomSet].points);
+    const time = setTimeout(() => {
         newSet.render(document.getElementById('inGameView'), 30);
-        clearInterval(_this.time);
+        clearInterval(this.time);
         chosenAnswer = false;
         countTime(QUESTION_TIME);
     }, 5 * 1000);
 };
-var badAnswer = function (message) {
-    var badChoice = document.createElement('p');
+const badAnswer = (message) => {
+    const badChoice = document.createElement('p');
     badChoice.classList.add('timeIsUp');
     badChoice.innerHTML = message;
     document.body.insertAdjacentElement('afterend', badChoice);
-    setTimeout(function () {
+    setTimeout(() => {
         badChoice.remove();
     }, 5000);
 };
-// Function which simulate going back in SPA App instead of treating every dynamic component like a first rendering view
-var fakeHistoryBack = function (window, location) {
+const fakeHistoryBack = (window, location) => {
     history.replaceState(null, document.title, location.pathname + "#!/stealingyourhistory");
     history.pushState(null, document.title, location.pathname);
-    window.addEventListener("popstate", function () {
+    window.addEventListener("popstate", () => {
         if (location.hash === "#!/stealingyourhistory") {
             history.replaceState(null, document.title, location.pathname);
             setTimeout(function () {
@@ -122,72 +120,67 @@ var fakeHistoryBack = function (window, location) {
         }
     }, false);
 };
-var startButtonClick = function (e) {
-    //history.pushState(null,null, `${location.href}quiz`)
+const startButtonClick = (e) => {
     e.preventDefault();
     document.body.innerHTML = '';
     document.body.appendChild(inGameViewTemplateContent);
 };
-// Constants and IMPORTANT variables
-var QUESTION_TIME = 30;
-var BASIC_URL = location.href;
-var data;
-var chosenAnswer = false;
-var questionNumber = 0;
-var volume = 0.5;
-var points = 0;
-// Query Selectors
-var startButton = document.querySelector('.startButton');
-var informationsButton = document.querySelector('.informationsButton');
-var optionsButton = document.querySelector('.optionsButton');
-//@ts-ignore
-var inGameViewTemplate = document.getElementById('inGameViewTemplate');
-var inGameViewTemplateContent = inGameViewTemplate.content;
-/**
- *  Events
- */
-startButton.addEventListener('click', function (e) {
+const QUESTION_TIME = 30;
+const BASIC_URL = location.href;
+let data;
+let chosenAnswer = false;
+let questionNumber = 0;
+let volume = 0.5;
+let points = 0;
+const startButton = document.querySelector('.startButton');
+const informationsButton = document.querySelector('.informationsButton');
+const optionsButton = document.querySelector('.optionsButton');
+const inGameViewTemplate = document.getElementById('inGameViewTemplate');
+const inGameViewTemplateContent = inGameViewTemplate.content;
+startButton.addEventListener('click', e => {
     fakeHistoryBack(window, location);
     startButtonClick(e);
-    //FIRST CHECH IF RENDERING IS ACCOMPLISHED
-    var quizRenderingRegex = /{{[A-z]{0,16}}}/g;
-    var isNotRendered = quizRenderingRegex.test(document.getElementById('inGameView').innerHTML);
+    const quizRenderingRegex = /{{[A-z]{0,16}}}/g;
+    const isNotRendered = quizRenderingRegex.test(document.getElementById('inGameView').innerHTML);
+    if (document.getElementById('inGameView') === null) {
+        window.location.reload();
+    }
     if (isNotRendered || !data) {
-        document.getElementById('inGameView').innerHTML = "<div class=\"loadingDiv\"><p class=\"loading\">Loading</p><i class=\"fas fa-cog\"></i></div>";
-        setTimeout(function () {
+        document.getElementById('inGameView').innerHTML = `<div class="loadingDiv"><p class="loading">Loading</p><i class="fas fa-cog"></i></div>`;
+        setTimeout(() => {
             startButtonClick(e);
         }, 800);
     }
     countTime(QUESTION_TIME);
 });
-informationsButton.addEventListener('click', function (e) {
+informationsButton.addEventListener('click', e => {
     fakeHistoryBack(window, location);
     e.preventDefault();
-    var informations = document.createElement('p');
+    const informations = document.createElement('p');
     informations.classList.add('informations');
     informations.innerHTML = 'This Quiz app is ...';
     document.body.innerHTML = '';
     document.body.appendChild(informations);
 });
-optionsButton.addEventListener('click', function (e) {
+optionsButton.addEventListener('click', e => {
     fakeHistoryBack(window, location);
     e.preventDefault();
-    var ul = document.createElement("ul");
-    var li = document.createElement("li");
-    var header = document.createElement('h3');
-    var soundSlider = document.createElement('input');
+    const ul = document.createElement("ul");
+    const li = document.createElement("li");
+    const header = document.createElement('h3');
+    const soundSlider = document.createElement('input');
     header.innerHTML = 'Options';
     ul.classList.add('optionsUl');
     li.classList.add('optionsLi');
-    li.innerHTML = "Sound: " + volume * 100 + "%";
+    li.innerHTML = `Sound: ${volume * 100}%`;
     soundSlider.type = 'range';
     soundSlider.min = '1';
     soundSlider.max = '100';
     soundSlider.value = '50';
     soundSlider.classList.add('soundSlider');
-    var backgroundColorOpt = li.cloneNode(false);
+    const backgroundColorOpt = li.cloneNode(false);
     backgroundColorOpt.innerHTML = 'Background color';
-    var questionTime = li.cloneNode(false);
+    const questionTime = li.cloneNode(false);
     questionTime.innerHTML = 'Time for questions';
     header.classList.add('optionsHeader');
     document.body.innerHTML = '';
@@ -197,54 +190,48 @@ optionsButton.addEventListener('click', function (e) {
     ul.appendChild(soundSlider);
     ul.appendChild(backgroundColorOpt);
     ul.appendChild(questionTime);
-    soundSlider.addEventListener('change', function () {
-        var newVolume = volume.toString();
+    soundSlider.addEventListener('change', () => {
+        let newVolume = volume.toString();
         newVolume = soundSlider.value;
         volume = parseInt(newVolume) / 100;
-        li.innerHTML = "Sound: " + Math.floor(volume * 100) + "%";
+        li.innerHTML = `Sound: ${Math.floor(volume * 100)}%`;
     });
 });
-// On click Quiz answers
-document.addEventListener('click', function (e) {
+document.addEventListener('click', (e) => {
     if (!chosenAnswer) {
         if (e.target.id === "answersButton") {
             chosenAnswer = true;
             if (e.target.value === 'true') {
                 points += 10;
-                var goodChoice_1 = document.createElement('p');
+                const goodChoice = document.createElement('p');
                 playSoundEffect('success');
-                goodChoice_1.classList.add('goodAnswer');
-                goodChoice_1.innerHTML = "Good answer!";
-                document.body.insertAdjacentElement('afterend', goodChoice_1);
-                setTimeout(function () {
-                    goodChoice_1.remove();
+                goodChoice.classList.add('goodAnswer');
+                goodChoice.innerHTML = `Good answer!`;
+                document.body.insertAdjacentElement('afterend', goodChoice);
+                setTimeout(() => {
+                    goodChoice.remove();
                 }, 5000);
-                clearInterval(_this.time);
+                clearInterval(this.time);
                 e.target.classList.add('correct');
-                clearInterval(_this.time);
+                clearInterval(this.time);
                 countTime(5);
             }
             else if (e.target.value = 'false') {
                 playSoundEffect('fail');
                 e.target.classList.add('bad');
-                for (var i = 0; i < document.querySelectorAll('#answersButton').length; i++) {
-                    //@ts-ignore
+                for (let i = 0; i < document.querySelectorAll('#answersButton').length; i++) {
                     if (document.querySelectorAll('#answersButton')[i].value === 'true') {
                         document.querySelectorAll('#answersButton')[i].classList.add('correct');
                     }
                 }
                 badAnswer('Bad answer');
-                clearInterval(_this.time);
+                clearInterval(this.time);
                 countTime(5);
             }
             renderNewQuestion();
         }
     }
 });
-/**
- * INIT MAIN
- */
-// Dispatch data from database
-var dataReceive = function () { return data_js_1.getData.then(function (result) { data = result; }); };
+const dataReceive = () => getData.then(result => { data = result; });
 dataReceive();
 randomQuestion(document.getElementById('inGameViewTemplate'));

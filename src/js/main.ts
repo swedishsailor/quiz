@@ -188,6 +188,9 @@ startButton.addEventListener('click', e => {
     //FIRST CHECH IF RENDERING IS ACCOMPLISHED
     const quizRenderingRegex: RegExp = /{{[A-z]{0,16}}}/g;
     const isNotRendered: boolean = quizRenderingRegex.test(document.getElementById('inGameView').innerHTML);
+    if(document.getElementById('inGameView') === null){
+        window.location.reload();
+    }
     if (isNotRendered || !data) {
         document.getElementById('inGameView').innerHTML = `<div class="loadingDiv"><p class="loading">Loading</p><i class="fas fa-cog"></i></div>`;
         setTimeout(() => {
